@@ -1,7 +1,11 @@
-{% for bucket in r2_buckets %}
-resource "cloudflare_r2_bucket" "{{ bucket.name | replace('-', '_') }}" {
-  account_id = "{{ cloudflare_account_id }}"
-  name       = "{{ bucket.name }}"
-  location   = "{{ bucket.location }}"
+resource "cloudflare_r2_bucket" "my_website_assets" {
+  account_id = var.cloudflare_account_id
+  name       = var.r2_bucket_name
+  location   = var.r2_location
 }
-{% endfor %}
+
+resource "cloudflare_r2_bucket" "backups" {
+  account_id = var.cloudflare_account_id
+  name       = var.r2_backup_bucket
+  location   = var.r2_location
+}

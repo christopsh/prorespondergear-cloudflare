@@ -18,7 +18,7 @@ resource "cloudflare_firewall_rule" "block_common_bot_user_agents" {
   zone_id  = "f4b176ccc0a0c9307f69cc17980d7137"
   description = "Block Common Bot User Agents"
   filter {
-    expression = "(http.user_agent contains "bot" or http.user_agent contains "spider")"
+
   }
   action    = "challenge"
   priority  = 10

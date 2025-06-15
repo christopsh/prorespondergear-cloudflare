@@ -25,7 +25,6 @@ resource "cloudflare_record" "root_3" {
   zone_id = "f4b176ccc0a0c9307f69cc17980d7137"
   name    = "@"
   type    = "CAA"
-  value   = "0 issue "letsencrypt.org""
   ttl     = 1
   proxied = False
 
