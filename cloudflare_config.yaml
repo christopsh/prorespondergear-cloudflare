@@ -130,10 +130,12 @@ zone_settings:
   minify_css: true
   minify_js: true
   always_use_https: true
+  automatic_https_rewrites: true
   tls_1_3_enabled: true
   polish_enabled: true
   mirage_enabled: true
-  security_level: "medium"
+  cache_by_device_type: true
+  security_level: "high"
   waf_enabled: true
   browser_integrity_check: true
   bot_fight_mode: true
