@@ -1,0 +1,33 @@
+{% for worker in workers %}
+resource "cloudflare_worker_script" "{{ worker.name }}" {
+  name     = "{{ worker.script_name }}"
+  content  = file("{{ worker.script_source }}")
+}
+
+{% for route in worker.routes %}
+resource "cloudflare_worker_route" "{{ worker.name }}_route_{{ loop.index }}" {
+  zone_id     = "{{ cloudflare_zone_id }}"
+  pattern     = "{{ route }}"
+  script_name = cloudflare_worker_script.{{ worker.name }}.name
+}
+{% endfor %}
+
+{% if worker.kv_namespace_id is defined %}
+resource "cloudflare_worker_kv_namespace" "{{ worker.name }}_kv" {
+  title = "{{ worker.kv_namespace_id }}"
+}
+{% endif %}
+
+{% if worker.r2_bucket_binding is defined %}
+resource "cloudflare_worker_script" "{{ worker.name }}_with_r2" {
+  name     = "{{ worker.script_name }}"
+  content  = file("{{ worker.script_source }}")
+
+  r2_bucket_binding {
+    name = "{{ worker.r2_bucket_binding.binding_name }}"
+    bucket_name = "{{ worker.r2_bucket_binding.bucket_name }}"
+  }
+}
+{% endif %}
+
+{% endfor %}

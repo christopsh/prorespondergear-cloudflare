@@ -1,0 +1,14 @@
+{% for record in dns_records %}
+resource "cloudflare_record" "{{ record.name | replace('.', '_') | replace('@', 'root') }}_{{ loop.index }}" {
+  zone_id = "{{ cloudflare_zone_id }}"
+  name    = "{{ record.name }}"
+  type    = "{{ record.type }}"
+  value   = "{{ record.value }}"
+  ttl     = {{ record.ttl }}
+  proxied = {{ record.proxied | default(false) }}
+
+  {% if record.priority is defined %}
+  priority = {{ record.priority }}
+  {% endif %}
+}
+{% endfor %}

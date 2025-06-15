@@ -1,0 +1,150 @@
+# Comprehensive cloudflare_config.yaml
+
+# --- Global Project Settings ---
+cloudflare_zone_id: "f4b176ccc0a0c9307f69cc17980d7137"
+cloudflare_account_id: "98a82dd8c45a4b1a534ad10a609bfca3"
+domain_name: "prorespondergear.shop"
+project_environment: "production"
+project_prefix: "terraform-png"
+
+# --- APO (Automated Platform Optimization) ---
+apo:
+  enabled: true
+  platform: "wordpress"
+
+# --- Cloudflare Workers & Routes ---
+workers:
+  - name: my-website-worker
+    routes:
+      - "www.{{ domain_name }}/*"
+      - "{{ domain_name }}/*"
+    script_name: "website-logic"
+    script_source: "workers/my-website-worker/index.js"
+    kv_namespace_id: "abcde12345fghij67890"
+
+  - name: serve-r2-assets
+    routes:
+      - "cdn.prorespondergear.shop/*"
+      - "r2.{{ domain_name }}/*"
+    script_name: "serve-r2-assets"
+    script_source: "workers/serve-r2-assets/index.js"
+    r2_bucket_binding:
+      bucket_name: "my-r2-assets"
+      binding_name: "R2_ASSETS"
+
+# --- DNS Records ---
+dns_records:
+  - name: "@"
+    type: "A"
+    value: "167.71.81.168"
+    ttl: 1
+    proxied: true
+
+  - name: "www"
+    type: "A"
+    value: "167.71.81.168"
+    ttl: 1
+    proxied: true
+
+  - name: "@"
+    type: "CAA"
+    value: "0 issue \"letsencrypt.org\""
+    ttl: 1
+    proxied: false
+
+  - name: "@"
+    type: "MX"
+    value: "route3.mx.cloudflare.net."
+    priority: 8
+    ttl: 1
+    proxied: false
+
+  - name: "@"
+    type: "MX"
+    value: "route2.mx.cloudflare.net."
+    priority: 68
+    ttl: 1
+    proxied: false
+
+  - name: "@"
+    type: "MX"
+    value: "route1.mx.cloudflare.net."
+    priority: 28
+    ttl: 1
+    proxied: false
+
+  - name: "cf2024-1._domainkey"
+    type: "TXT"
+    value: "v=DKIM1; ..."
+    ttl: 1
+    proxied: false
+
+  - name: "google._domainkey"
+    type: "TXT"
+    value: "v=DKIM1; ..."
+    ttl: 1
+    proxied: false
+
+  - name: "@"
+    type: "TXT"
+    value: "v=spf1 include:_spf.google.com include:_spf.mx.cloudflare.net ~all"
+    ttl: 1
+    proxied: false
+
+  - name: "cdn"
+    type: "CNAME"
+    value: "TODO: your-r2-endpoint.r2.cloudflarestorage.com"
+    ttl: 300
+    proxied: true
+
+# --- Zero Trust Access Applications ---
+zero_trust_applications:
+  - name: Admin Panel Access
+    domain: "admin.{{ domain_name }}"
+    app_type: "self_hosted"
+    access_policies:
+      - name: Allow Admins
+        decision: "allow"
+        precedence: 1
+        include_emails:
+          - "TODO: admin@{{ domain_name }}"
+          - "TODO: devteam@yourcompany.com"
+
+# --- Cloudflare Tunnels ---
+tunnels:
+  - name: production-web-tunnel
+  - name: staging-api-tunnel
+
+# --- Cloudflare R2 Buckets ---
+r2_buckets:
+  - name: my-website-assets
+    location: "auto"
+  - name: backups
+    location: "auto"
+
+# --- Zone Settings ---
+zone_settings:
+  ssl_mode: "full"
+  brotli: true
+  minify_html: true
+  minify_css: true
+  minify_js: true
+  always_use_https: true
+  tls_1_3_enabled: true
+  polish_enabled: true
+  mirage_enabled: true
+  security_level: "medium"
+  waf_enabled: true
+  browser_integrity_check: true
+  bot_fight_mode: true
+
+custom_firewall_rules:
+  - name: Block Common Bot User Agents
+    action: "challenge"
+    expression: "(http.user_agent contains \"bot\" or http.user_agent contains \"spider\")"
+    priority: 10
+
+  - name: Allow My Office IP
+    action: "allow"
+    expression: "(ip.src eq TODO: 203.0.113.1)"
+    priority: 5

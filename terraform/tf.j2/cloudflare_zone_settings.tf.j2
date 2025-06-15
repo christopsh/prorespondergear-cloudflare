@@ -1,0 +1,16 @@
+resource "cloudflare_zone_settings_override" "main" {
+  zone_id = "{{ cloudflare_zone_id }}"
+  settings {
+    ssl                     = "{{ zone_settings.ssl_mode }}"
+    brotli                  = {{ zone_settings.brotli }}
+    minify {
+      css  = {{ zone_settings.minify_css }}
+      html = {{ zone_settings.minify_html }}
+      js   = {{ zone_settings.minify_js }}
+    }
+    always_use_https        = {{ zone_settings.always_use_https }}
+    tls_1_3                 = {{ zone_settings.tls_1_3_enabled }}
+    mirage                  = {{ zone_settings.mirage_enabled }}
+    polish                  = "lossless"  # Set statically here, can be expanded if needed
+  }
+}

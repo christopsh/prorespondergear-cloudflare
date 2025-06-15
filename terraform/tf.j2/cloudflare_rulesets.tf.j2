@@ -1,0 +1,26 @@
+resource "cloudflare_zone_settings_override" "security_settings" {
+  zone_id = "{{ cloudflare_zone_id }}"
+  settings {
+    waf                   = {{ zone_settings.waf_enabled }}
+    browser_check         = {{ zone_settings.browser_integrity_check }}
+    security_level        = "{{ zone_settings.security_level }}"
+  }
+}
+
+resource "cloudflare_bot_management" "default" {
+  zone_id = "{{ cloudflare_zone_id }}"
+  enable_js   = {{ zone_settings.bot_fight_mode }}
+  fight_mode  = {{ zone_settings.bot_fight_mode }}
+}
+
+{% for rule in custom_firewall_rules %}
+resource "cloudflare_firewall_rule" "{{ rule.name | replace(' ', '_') | lower }}" {
+  zone_id  = "{{ cloudflare_zone_id }}"
+  description = "{{ rule.name }}"
+  filter {
+    expression = "{{ rule.expression }}"
+  }
+  action    = "{{ rule.action }}"
+  priority  = {{ rule.priority }}
+}
+{% endfor %}

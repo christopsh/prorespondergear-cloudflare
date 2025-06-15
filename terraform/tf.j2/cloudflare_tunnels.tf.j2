@@ -1,0 +1,6 @@
+{% for tunnel in tunnels %}
+resource "cloudflare_tunnel" "{{ tunnel.name | replace('-', '_') }}" {
+  account_id = "{{ cloudflare_account_id }}"
+  name       = "{{ tunnel.name }}"
+}
+{% endfor %}

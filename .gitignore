@@ -1,0 +1,30 @@
+# --- Python ---
+.venv/
+__pycache__/
+*.pyc
+
+# --- Terraform ---
+*.tfstate
+*.tfstate.*
+.terraform/
+terraform.tfvars  # 🔐 secrets go here — never commit this!
+crash.log
+
+# --- Terraform output folder ---
+terraform/output/
+
+# --- Node or npm (if you ever bundle JS) ---
+node_modules/
+npm-debug.log
+
+# --- macOS / Editor junk ---
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
+
+# --- Logs & backups ---
+*.log
+*.bak
+*.tmp
+*~
